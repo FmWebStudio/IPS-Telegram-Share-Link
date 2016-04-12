@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin name="Telegram Share Link" version_long="10000" version_human="1.0.0" author="Fm Web (Recouse)" website="http://fm-web.studio" update_check=""><hooks><hook type="C" class="\IPS\core\ShareLinks\Service" filename="telegramShareLink"><![CDATA[//<?php
+
+class hook71 extends _HOOK_CLASS_
+{
+		/**
+	 * Node Class
+	 */
+	protected $nodeClass = '\IPS\core\ShareLinks\Service';
+	
+	/**
+	 * Execute
+	 *
+	 * @return	void
+	 */
+	public function execute()
+	{
+		try
+		{
+			try
+			{
+				\IPS\Dispatcher::i()->checkAcpPermission( 'sharelinks_manage' );
+				
+				$reloadRoots	= FALSE;
+				
+				/* First, see if any are missing */
+				$nodeClass = $this->nodeClass;
+				
+				$className	= 'Telegram';
+				
+				try
+				{
+					$nodeClass::load( mb_strtolower( $className ), 'share_key' );
+				}
+				catch( \OutOfRangeException $e )
+				{
+					/* Class does not exist - let's add it */
+					$newService	= new \IPS\core\ShareLinks\Service;
+					$newService->key		= mb_strtolower( $className );
+					$newService->groups		= '*';
+					$newService->title		= 'Telegram';
+					$newService->enabled	= 0;
+					$newService->save();
+					
+					$reloadRoots	= TRUE;
+				}
+				
+				if( $reloadRoots === TRUE )
+				{
+					$nodeClass::resetRootResult();
+				}
+				
+				return parent::execute();
+			}
+			catch ( \RuntimeException $e )
+			{
+				if ( method_exists( get_parent_class(), __FUNCTION__ ) )
+				{
+					return call_user_func_array( 'parent::' . __FUNCTION__, func_get_args() );
+				}
+				else
+				{
+					throw $e;
+				}
+			}
+		}
+		catch ( \RuntimeException $e )
+		{
+			if ( method_exists( get_parent_class(), __FUNCTION__ ) )
+			{
+				return call_user_func_array( 'parent::' . __FUNCTION__, func_get_args() );
+			}
+			else
+			{
+				throw $e;
+			}
+		}
+	}
+}]]></hook></hooks><htmlFiles><html filename="telegramShareLink.phtml">PGlwczp0ZW1wbGF0ZSBwYXJhbWV0ZXJzPSIkdXJsLCAkdGl0bGUiIC8+DQo8YSBocmVmPSJodHRwczovL3RlbGVncmFtLm1lL3NoYXJlL3VybD91cmw9eyR1cmx9JmFtcDt0ZXh0PXskdGl0bGV9IiBjbGFzcz0iY1NoYXJlTGluayBjU2hhcmVMaW5rX3RlbGVncmFtIiB0YXJnZXQ9Il9ibGFuayIgZGF0YS1yb2xlPSJzaGFyZUxpbmsiIHRpdGxlPSd7bGFuZz0idGVsZWdyYW1fdGV4dCJ9JyBkYXRhLWlwc1Rvb2x0aXA+DQoJPGkgY2xhc3M9ImZhIGZhLXBhcGVyLXBsYW5lIj48L2k+DQo8L2E+</html></htmlFiles><cssFiles><css filename="telegramShareLink.css">LmNTaGFyZUxpbmtfdGVsZWdyYW0gew0KCWJhY2tncm91bmQtY29sb3I6ICMxNzlDREU7DQp9</css></cssFiles><jsFiles/><resourcesFiles/><lang><word key="telegram_text" js="0">Share on Telegram</word></lang><versions><version long="10000" human="1.0.0"><![CDATA[//<?php
+
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	exit;
+}
+
+/**
+ * Install Code
+ */
+class ips_plugins_setup_install
+{
+	/**
+	 * ...
+	 *
+	 * @return	array	If returns TRUE, upgrader will proceed to next step. If it returns any other value, it will set this as the value of the 'extra' GET parameter and rerun this step (useful for loops)
+	 */
+	public function step1()
+	{
+		
+
+		return TRUE;
+	}
+	
+	// You can create as many additional methods (step2, step3, etc.) as is necessary.
+	// Each step will be executed in a new HTTP request
+}]]></version></versions></plugin>
